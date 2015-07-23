@@ -14,9 +14,13 @@ from argparse import ArgumentParser
 from slackclient import SlackClient
 
 
+logger = logging.getLogger(__name__)
+
+
 def dbg(debug_string):
-    # if debug:
-    logging.info(debug_string)
+    if debug:
+        pass
+        # logger.info(debug_string)
 
 
 class RtmBot(object):
@@ -112,8 +116,8 @@ class Plugin(object):
             if not debug:
                 try:
                     eval("self.module." + function_name)(data)
-                except:
-                    dbg("problem in module {} {}".format(function_name, data))
+                except Exception, e:
+                    logger.exception(e)
             else:
                 eval("self.module." + function_name)(data)
         if "catch_all" in dir(self.module):
@@ -170,11 +174,18 @@ class UnknownChannel(Exception):
 
 
 def main_loop():
-    if "LOGFILE" in config:
-        logging.basicConfig(filename=config["LOGFILE"],
-                            level=logging.INFO,
-                            format='%(asctime)s %(message)s')
-    logging.info(directory)
+    # if "LOGFILE" in config:
+    # logging.basicConfig(filename=config["LOGFILE"],
+    formatter = logging.Formatter('%(asctime)s %(message)s')
+    # err = logging.StreamHandler(stream=sys.stderr)
+    err = logging.FileHandler(filename='err.log')
+    err.setLevel(logging.ERROR)
+    err.setFormatter(formatter)
+    logger.addHandler(err)
+    # import ipdb; ipdb.set_trace()
+    # logging.basicConfig(level=logging.INFO,
+    #                     format='%(asctime)s %(message)s')
+    # logging.info(directory)
     try:
         bot.start()
     except KeyboardInterrupt:
