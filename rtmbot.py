@@ -14,13 +14,13 @@ from argparse import ArgumentParser
 from slackclient import SlackClient
 
 
+logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 
 def dbg(debug_string):
     if debug:
-        pass
-        # logger.info(debug_string)
+        logger.info(debug_string)
 
 
 class RtmBot(object):
@@ -174,24 +174,12 @@ class UnknownChannel(Exception):
 
 
 def main_loop():
-    # if "LOGFILE" in config:
-    # logging.basicConfig(filename=config["LOGFILE"],
-    formatter = logging.Formatter('%(asctime)s %(message)s')
-    # err = logging.StreamHandler(stream=sys.stderr)
-    err = logging.FileHandler(filename='err.log')
-    err.setLevel(logging.ERROR)
-    err.setFormatter(formatter)
-    logger.addHandler(err)
-    # import ipdb; ipdb.set_trace()
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s %(message)s')
-    # logging.info(directory)
     try:
         bot.start()
     except KeyboardInterrupt:
         sys.exit(0)
-    except:
-        logging.exception('OOPS')
+    except Exception, e:
+        logging.exception(e)
 
 
 def parse_args():
